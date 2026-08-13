@@ -1,0 +1,9 @@
+#github로 push할 때, 
+# python cache 파일 제외
+
+__pycache__/
+*.pyc
+
+#파일 용량이 너무 커서 github에 안 올라감
+data/genome/
+data/annotation/
