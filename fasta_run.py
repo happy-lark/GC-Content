@@ -1,5 +1,4 @@
 # 실행용 파일
-
 from fasta import read_fasta
 
 fasta_path = (

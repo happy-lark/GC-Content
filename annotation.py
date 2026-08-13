@@ -8,7 +8,7 @@ import pandas as pd
 def read_gtf(gtf_path):
 
     #progress tracking 
-    print("[1/3] reading gtf file")
+    print("Reading gtf file")
 
     columns = [
         "chromosome",

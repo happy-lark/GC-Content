@@ -1,6 +1,5 @@
 #실행용 파일
 #read -> extract -> filter
-
 from annotation import (
     read_gtf,
     extract_attribute,
