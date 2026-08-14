@@ -1,4 +1,5 @@
-#run 파일들 중복되는 부분,,,, 나중에 확인 끝나면 run 파일 앖애기
+#GTF, FASTA Data Looading
+
 from annotation import load_annotation
 from fasta import read_fasta
 

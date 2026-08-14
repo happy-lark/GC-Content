@@ -6,7 +6,6 @@ import pandas as pd
 
 #gtf 파일을 읽어서 dataframe으로 저장 
 def read_gtf(gtf_path):
-
     #progress tracking 
     print("Reading gtf file")
 
@@ -32,50 +31,27 @@ def read_gtf(gtf_path):
 
     return gtf
 
-#GTF의 attributes column에서 
+#GTF attributes column에서 
 #gene_id, gene_type, gene_name, transcript_id 추출
 def extract_attribute(gtf):
+    gtf = gtf.copy()
 
-    gtf=gtf.copy() #원본 dataframe은 수정 X 
-
-    gtf["gene_id"] = (
-        gtf["attributes"]
-        .str.extract(r'gene_id "([^"]+)"') #기호가 뭔지 알아보기
-    )
-
-    gtf["gene_type"] = (
-        gtf["attributes"]
-        .str.extract(r'gene_type "([^"]+)"')
-    )
-
-    gtf["gene_name"] = (
-        gtf["attributes"]
-        .str.extract(r'gene_name "([^"]+)"')
-    )
-
-    gtf["transcript_id"] = (
-        gtf["attributes"]
-        .str.extract(r'transcript_id "([^"]+)"')
-    )
+    gtf["gene_id"] = gtf["attributes"].str.extract(r'gene_id "([^"]+)"')
+    gtf["gene_type"] = gtf["attributes"].str.extract(r'gene_type "([^"]+)"')
+    gtf["gene_name"] = gtf["attributes"].str.extract(r'gene_name "([^"]+)"')
+    gtf["transcript_id"] = gtf["attributes"].str.extract(r'transcript_id "([^"]+)"')
 
     return gtf
 
-#protein coding gene에 속하는 annotation만 반환
+#protein coding gene annotation만 반환
 def filter_protein_coding(gtf):
-    protein_coding_gtf = gtf[
+    return gtf[
         gtf["gene_type"] == "protein_coding"
-    ].copy()
+    ].reset_index(drop=True)
 
-    protein_coding_gtf = protein_coding_gtf.reset_index(
-        drop=True
-    )
-
-    return protein_coding_gtf
-
+#GTF 전체 전처리 
 def load_annotation(gtf_path):
-
     gtf = read_gtf(gtf_path)
     gtf = extract_attribute(gtf)
     gtf = filter_protein_coding(gtf)
-
     return gtf
