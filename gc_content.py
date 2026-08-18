@@ -43,7 +43,61 @@ def feature_gc(genome, chromosome, regions):
         "GC_without_N": gc_content(sequence, False)
     }
 
-# region별
+#=====GC Cotent 계산
+#1. chromosome별 GC Content 계산
+# 일반 GC / noN GC로 구분
+def calculate_chromosome_gc(genome):
+    results = []
+    
+    chromosomes = [
+        f"chr{i}" for i in range(1, 23)
+    ] + ["chrX", "chrY"]
+
+    for chromosome in chromosomes:
+        sequence = genome[chromosome]
+        results.append([
+            chromosome,
+            len(sequence),
+            gc_content(sequence, True),
+            gc_content(sequence, False)
+        ])
+
+    return pd.DataFrame(
+        results,
+        columns=[
+            "Chromosome",
+            "Length",
+            "GC_with_N",
+            "GC_without_N"
+        ]
+    )
+
+# 2. gene level: 각 protein-coding gene 전체 영역의 GC
+def calculate_gene_gc(gtf, genome):
+    results = []
+    for gene_id, gene_df in gtf.groupby("gene_id"):
+        chromosome = gene_df["chromosome"].iloc[0]
+        gene_name = gene_df["gene_name"].iloc[0]
+        gene_regions, _, _ = get_regions(gene_df)
+        gc = feature_gc(genome, chromosome, gene_regions)
+        results.append([
+            gene_id,
+            gene_name,
+            chromosome,
+            gc["GC_without_N"]
+        ])
+
+    return pd.DataFrame(
+        results,
+        columns=[
+            "gene_id",
+            "gene_name",
+            "chromosome",
+            "GC_content"
+        ]
+    )
+
+#3. feature-level
 # CDS / exon / intron / 5'UTR / 3'UTR / upstream / downstream
 def calculate_region_gc(gtf, genome):
     results = []
@@ -105,33 +159,3 @@ def calculate_region_gc(gtf, genome):
         ]
     )
 
-# gene 전체 GC
-def calculate_gene_gc(gtf, genome):
-
-    results = []
-
-    for gene_id, gene_df in gtf.groupby("gene_id"):
-
-        chromosome = gene_df["chromosome"].iloc[0]
-        gene_name = gene_df["gene_name"].iloc[0]
-
-        gene_regions, _, _ = get_regions(gene_df)
-
-        gc = feature_gc(genome, chromosome, gene_regions)
-
-        results.append([
-            gene_id,
-            gene_name,
-            chromosome,
-            gc["GC_without_N"]
-        ])
-
-    return pd.DataFrame(
-        results,
-        columns=[
-            "gene_id",
-            "gene_name",
-            "chromosome",
-            "GC_content"
-        ]
-    )
