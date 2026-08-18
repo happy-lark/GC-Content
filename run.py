@@ -7,12 +7,13 @@ from gc_content import (
 )
 from go_analysis import enrich_go
 from visualization import (
+    plot_chromosome_gc,
     plot_gene_gc,
     plot_feature_gc,
     plot_feature_median,
+    plot_gene_group,
     plot_go
 )
-
 
 class GCAnalysis:
 
@@ -174,27 +175,77 @@ class GCAnalysis:
                 self.show_go()
 
             elif choice == "8":
+
                 graph = input(
-                    "1. Gene-level GC\n"
-                    "2. Feature-level GC\n"
-                    "3. Feature-level Median GC\n"
+                    "1. Chromosome-level GC\n"
+                    "2. Gene-level GC\n"
+                    "3. Feature-level GC\n"
+                    "4. Feature-level Median GC\n"
+                    "5. Gene-level Top/Bottom\n"
+                    "6. Feature-level Top/Bottom\n"
                     "Select: "
                 )
 
                 if graph == "1":
-                    plot_gene_gc(self.gene_gc)
+                    plot_chromosome_gc(
+                        self.chromosome_gc
+                    )
 
                 elif graph == "2":
+                    plot_gene_gc(
+                        self.gene_gc
+                    )
+
+                elif graph == "3":
                     plot_feature_gc(
                         self.feature_gc,
                         self.features,
                         self.feature_names
                     )
 
-                elif graph == "3":
+                elif graph == "4":
                     plot_feature_median(
                         self.get_feature_median()
                     )
+
+                elif graph == "5":
+                    top, bottom = self.get_top_bottom()
+
+                    plot_gene_group(
+                        top,
+                        "GC_content",
+                        "Gene-level Top 10"
+                    )
+
+                    plot_gene_group(
+                        bottom,
+                        "GC_content",
+                        "Gene-level Bottom 10"
+                    )
+
+                elif graph == "6":
+                    feature = input(
+                        f"Select feature {self.features}: "
+                    )
+
+                    if feature in self.features:
+                        top, bottom = self.get_top_bottom(feature)
+                        name = self.feature_names[feature]
+
+                        plot_gene_group(
+                            top,
+                            feature,
+                            f"{name} Top 10"
+                        )
+
+                        plot_gene_group(
+                            bottom,
+                            feature,
+                            f"{name} Bottom 10"
+                        )
+
+                    else:
+                        print("Invalid feature")
 
                 else:
                     print("Invalid option")
@@ -205,6 +256,7 @@ class GCAnalysis:
 
             else:
                 print("Invalid option")
+
 
 analysis = GCAnalysis(gtf, genome)
 analysis.run()
