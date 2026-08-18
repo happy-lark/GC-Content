@@ -35,7 +35,6 @@ class GCAnalysis:
 
     # GC Content 계산
     def calculate_gc(self):
-
         print("\nCalculating Chromosome-level GC Content...")
         self.chromosome_gc = calculate_chromosome_gc(self.genome)
 
@@ -47,30 +46,44 @@ class GCAnalysis:
 
         print("GC Content calculation completed!")
 
+    # Feature 선택
+    def select_feature(self):
+        for i, feature in enumerate(self.features, start=1):
+            print(f"{i}. {self.feature_names[feature]}")
+
+        choice = input("Select feature: ")
+
+        if not choice.isdigit():
+            print("Invalid feature")
+            return None
+
+        index = int(choice) - 1
+
+        if index not in range(len(self.features)):
+            print("Invalid feature")
+            return None
+
+        return self.features[index]
+
     # Feature별 median GC 계산
     def get_feature_median(self):
-
         median_gc = self.feature_gc[self.features].median()
         median_gc.index = self.feature_names.values()
-
         return median_gc
 
     # Feature별 median GC 출력
     def show_feature_median(self):
-
         print("\n=== Feature-level Median GC Content ===")
         print(self.get_feature_median().to_string())
 
     # Top / Bottom 100
     def get_top_bottom(self, feature="Gene"):
-
         if feature == "Gene":
             df = self.gene_gc
             column = "GC_content"
         else:
             df = self.feature_gc
             column = feature
-
         return (
             df.nlargest(100, column),
             df.nsmallest(100, column)
@@ -78,7 +91,6 @@ class GCAnalysis:
 
     # Top / Bottom 출력
     def show_top_bottom(self, feature="Gene"):
-
         top, bottom = self.get_top_bottom(feature)
         name = self.feature_names.get(feature, "Gene")
 
@@ -90,14 +102,16 @@ class GCAnalysis:
 
     # GO 분석
     def show_go(self):
+        level = input("1. Gene-level\n2. Feature-level\nSelect: ")
 
-        feature = input(f"Gene or feature {self.features}: ")
-
-        if feature.lower() == "gene":
+        if level == "1":
             feature = "Gene"
-
-        if feature != "Gene" and feature not in self.features:
-            print("Invalid feature")
+        elif level == "2":
+            feature = self.select_feature()
+            if feature is None:
+                return
+        else:
+            print("Invalid option")
             return
 
         group = input("Top or Bottom: ").lower()
@@ -124,13 +138,68 @@ class GCAnalysis:
         name = self.feature_names.get(feature, "Gene")
         plot_go(result, f"{name} {group.title()} 100 GO")
 
+    # Visualization
+    def show_visualization(self):
+        print("""
+1. Chromosome-level GC
+2. Gene-level GC
+3. Feature-level GC
+4. Feature-level Median GC
+5. Gene-level Top/Bottom
+6. Feature-level Top/Bottom
+""")
+        graph = input("Select: ")
+
+        if graph == "1":
+            plot_chromosome_gc(self.chromosome_gc)
+        elif graph == "2":
+            plot_gene_gc(self.gene_gc)
+        elif graph == "3":
+            plot_feature_gc(
+                self.feature_gc,
+                self.features,
+                self.feature_names
+            )
+        elif graph == "4":
+            plot_feature_median(
+                self.get_feature_median()
+            )
+        elif graph == "5":
+            top, bottom = self.get_top_bottom()
+            plot_gene_group(
+                top,
+                "GC_content",
+                "Gene-level Top 10"
+            )
+            plot_gene_group(
+                bottom,
+                "GC_content",
+                "Gene-level Bottom 10"
+            )
+        elif graph == "6":
+            feature = self.select_feature()
+            if feature is None:
+                return
+            top, bottom = self.get_top_bottom(feature)
+            name = self.feature_names[feature]
+            plot_gene_group(
+                top,
+                feature,
+                f"{name} Top 10"
+            )
+            plot_gene_group(
+                bottom,
+                feature,
+                f"{name} Bottom 10"
+            )
+        else:
+            print("Invalid option")
+
     # 메뉴
     def run(self):
-
         self.calculate_gc()
 
         while True:
-
             print("""
 1. Chromosome-level GC Content
 2. Gene-level GC Content
@@ -142,121 +211,32 @@ class GCAnalysis:
 8. Visualization
 0. Exit
 """)
-
             choice = input("Select option: ")
-
             if choice == "1":
                 print(self.chromosome_gc.to_string(index=False))
-
             elif choice == "2":
                 print(self.gene_gc.to_string(index=False))
-
             elif choice == "3":
                 display_df = self.feature_gc.rename(
                     columns=self.feature_names
                 )
                 print(display_df.to_string(index=False))
-
             elif choice == "4":
                 self.show_feature_median()
-
             elif choice == "5":
                 self.show_top_bottom()
-
             elif choice == "6":
-                feature = input(f"Select feature {self.features}: ")
-
-                if feature in self.features:
+                feature = self.select_feature()
+                if feature:
                     self.show_top_bottom(feature)
-                else:
-                    print("Invalid feature")
-
             elif choice == "7":
                 self.show_go()
-
             elif choice == "8":
-
-                graph = input(
-                    "1. Chromosome-level GC\n"
-                    "2. Gene-level GC\n"
-                    "3. Feature-level GC\n"
-                    "4. Feature-level Median GC\n"
-                    "5. Gene-level Top/Bottom\n"
-                    "6. Feature-level Top/Bottom\n"
-                    "Select: "
-                )
-
-                if graph == "1":
-                    plot_chromosome_gc(
-                        self.chromosome_gc
-                    )
-
-                elif graph == "2":
-                    plot_gene_gc(
-                        self.gene_gc
-                    )
-
-                elif graph == "3":
-                    plot_feature_gc(
-                        self.feature_gc,
-                        self.features,
-                        self.feature_names
-                    )
-
-                elif graph == "4":
-                    plot_feature_median(
-                        self.get_feature_median()
-                    )
-
-                elif graph == "5":
-                    top, bottom = self.get_top_bottom()
-
-                    plot_gene_group(
-                        top,
-                        "GC_content",
-                        "Gene-level Top 10"
-                    )
-
-                    plot_gene_group(
-                        bottom,
-                        "GC_content",
-                        "Gene-level Bottom 10"
-                    )
-
-                elif graph == "6":
-                    feature = input(
-                        f"Select feature {self.features}: "
-                    )
-
-                    if feature in self.features:
-                        top, bottom = self.get_top_bottom(feature)
-                        name = self.feature_names[feature]
-
-                        plot_gene_group(
-                            top,
-                            feature,
-                            f"{name} Top 10"
-                        )
-
-                        plot_gene_group(
-                            bottom,
-                            feature,
-                            f"{name} Bottom 10"
-                        )
-
-                    else:
-                        print("Invalid feature")
-
-                else:
-                    print("Invalid option")
-
+                self.show_visualization()
             elif choice == "0":
                 print("Analysis completed!")
                 break
-
             else:
                 print("Invalid option")
-
-
 analysis = GCAnalysis(gtf, genome)
 analysis.run()

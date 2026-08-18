@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 # chromosome별 GC Content
 def plot_chromosome_gc(chromosome_gc_df):
 
