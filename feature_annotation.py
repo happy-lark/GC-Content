@@ -92,7 +92,6 @@ def get_utr_regions(gene_df):
     return union_intervals(utr5), union_intervals(utr3)
 
 # 5. gene과 gene 사이 intergenic 구간 계산
-#strand에 따라 upstream/downstream 구분
 def calculate_intergenic(genes):
 
     results = []
@@ -124,3 +123,4 @@ def calculate_intergenic(genes):
         ])
 
     return results
+
