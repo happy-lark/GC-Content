@@ -18,9 +18,12 @@ from visualization import (
 class GCAnalysis:
 
     def __init__(self, gtf, genome):
+
+        #입력 받은 GTF, genome 데이터를 객체 내부 저장
         self.gtf = gtf
         self.genome = genome
 
+        #dictionary
         self.feature_names = {
             "CDS_GC": "CDS",
             "Exon_GC": "Exon",
@@ -30,7 +33,7 @@ class GCAnalysis:
             "Upstream_GC": "Upstream Intergenic",
             "Downstream_GC": "Downstream Intergenic"
         }
-
+        #dictionary key만 리스트로 저장 
         self.features = list(self.feature_names)
 
     # GC Content 계산
@@ -48,9 +51,12 @@ class GCAnalysis:
 
     # Feature 선택
     def select_feature(self):
+        #self.features에 있는 feature들을 하나씩 반복하면서 번호 붙임 
+        # enumerate(): 리스트 반복하면서 값/번호를 같이 반환
         for i, feature in enumerate(self.features, start=1):
             print(f"{i}. {self.feature_names[feature]}")
 
+        #사용자에게 번호를 입력받아 choice에 저장
         choice = input("Select feature: ")
 
         if not choice.isdigit():
@@ -59,13 +65,15 @@ class GCAnalysis:
 
         index = int(choice) - 1
 
+        #입력한 번호가 실제 feature 안에 있는지 확인 
         if index not in range(len(self.features)):
             print("Invalid feature")
             return None
-
+        
+        #선택한 feature의 실제 column 이름 반환 
         return self.features[index]
 
-    # Feature별 median GC 계산
+    # Feature별 median GC content 계산
     def get_feature_median(self):
         median_gc = self.feature_gc[self.features].median()
         median_gc.index = self.feature_names.values()
@@ -77,7 +85,7 @@ class GCAnalysis:
         print(self.get_feature_median().to_string())
 
     # Top / Bottom 100
-    def get_top_bottom(self, feature="Gene"):
+    def get_top_bottom(self, feature):
         if feature == "Gene":
             df = self.gene_gc
             column = "GC_content"
@@ -90,7 +98,7 @@ class GCAnalysis:
         )
 
     # Top / Bottom 출력
-    def show_top_bottom(self, feature="Gene"):
+    def show_top_bottom(self, feature):
         top, bottom = self.get_top_bottom(feature)
         name = self.feature_names.get(feature, "Gene")
 
@@ -128,9 +136,7 @@ class GCAnalysis:
 
         if result.empty:
             print(
-                f"{group.title()} 100: "
-                "No significant GO terms after Adjusted P-value filtering"
-            )
+                f"{group.title()} 100: No significant GO terms after Adjusted P-value filtering")
             return
 
         print(result.to_string(index=False))
@@ -161,37 +167,18 @@ class GCAnalysis:
                 self.feature_names
             )
         elif graph == "4":
-            plot_feature_median(
-                self.get_feature_median()
-            )
-        elif graph == "5":
-            top, bottom = self.get_top_bottom()
-            plot_gene_group(
-                top,
-                "GC_content",
-                "Gene-level Top 10"
-            )
-            plot_gene_group(
-                bottom,
-                "GC_content",
-                "Gene-level Bottom 10"
-            )
-        elif graph == "6":
-            feature = self.select_feature()
+            plot_feature_median(self.get_feature_median())
+        elif graph==["5","6"]:
+            feature="Gene" if graph=="5" else self.select.feature() 
             if feature is None:
-                return
-            top, bottom = self.get_top_bottom(feature)
-            name = self.feature_names[feature]
-            plot_gene_group(
-                top,
-                feature,
-                f"{name} Top 10"
-            )
-            plot_gene_group(
-                bottom,
-                feature,
-                f"{name} Bottom 10"
-            )
+                return 
+            top, bottom=self.get_top_bottom(feature)
+
+            column="GC_content" if feature=="Gene" else feature
+            name=self.feature_names.get(feature,"Gene")
+
+            plot_gene_group(top,column,f"{name} Top 100")
+            plot_gene_group(bottom,column, f"{name} Bottom 100")
         else:
             print("Invalid option")
 
@@ -240,3 +227,4 @@ class GCAnalysis:
                 print("Invalid option")
 analysis = GCAnalysis(gtf, genome)
 analysis.run()
+
