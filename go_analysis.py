@@ -9,9 +9,9 @@ def enrich_go(gene_df):
     ]
 
     result = gp.enrichr(
-        gene_list=gene_df["gene_name"].dropna().tolist(),
+        gene_list=gene_df["gene_name"].dropna().tolist(), #NaN (결측값) 제거
         gene_sets=gene_sets,
-        outdir=None
+        outdir=None #enrichr 결과를 별도 파일로 저장 X 
     ).results
 
     return result[
