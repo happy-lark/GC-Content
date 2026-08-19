@@ -25,7 +25,7 @@ def read_gtf(gtf_path):
         gtf_path,
         sep="\t", #column 구분 tab으로 
         comment="#", #hashtag으로 시작하는 줄은 무시
-        names=columns, #datagram column 이름 지정
+        names=columns, #dataframe column 이름 지정
     )
     print(f"GTF loaded: {len(gtf):,} rows")
 
@@ -33,6 +33,7 @@ def read_gtf(gtf_path):
 
 #GTF attributes column에서 
 #gene_id, gene_type, gene_name, transcript_id 추출
+#gene_id "([^"]+)": 
 def extract_attribute(gtf):
     gtf = gtf.copy()
 
@@ -47,7 +48,7 @@ def extract_attribute(gtf):
 def filter_protein_coding(gtf):
     return gtf[
         gtf["gene_type"] == "protein_coding"
-    ].reset_index(drop=True)
+    ].reset_index(drop=True) #index 0붙 다시 정리
 
 #GTF 전체 전처리 
 def load_annotation(gtf_path):
