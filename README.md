@@ -1,0 +1,59 @@
+## Project Structure
+
+**1. `annotation.py`** <br>
+**GTF annotation preprocessing**
+- GTF 파일 읽기
+- `gene_id`, `gene_type`, `gene_name`, `transcript_id` 추출
+- Protein-coding gene filtering
+
+**2. `fasta.py`** <br>
+**Genome FASTA loading**
+- FASTA 파일 읽기
+- Chromosome별 DNA sequence를 dictionary 형태로 저장
+
+**3. `feature_annotation.py`** <br>
+**Gene feature annotation**
+- Gene, CDS, exon 좌표 추출
+- 겹치거나 이어진 CDS/exon 좌표 병합
+- Intron 좌표 계산
+- 5′ UTR / 3′ UTR 좌표 계산
+- Upstream / downstream intergenic 영역 계산
+
+**4. `gc_content.py`** <br>
+**GC Content calculation**
+- Feature 좌표에 해당하는 DNA sequence 추출
+- GC Content 계산
+- 전체 protein-coding gene의 GC Content 계산
+- CDS, exon, intron, UTR, intergenic 영역별 GC Content 계산
+
+**5. `go_analysis.py`** <br>
+**GO Enrichment Analysis**
+- Top / Bottom gene을 이용한 GO enrichment 분석
+- Adjusted p-value < 0.05인 유의한 GO term 추출
+
+**6. `visualization.py`** <br>
+**Result visualization**
+- 전체 gene GC Content 분포 시각화
+- Region별 GC Content 비교
+- GO enrichment 결과 시각화
+
+**7. `main.py`**<br>
+**Data loading**
+- GTF 파일 로딩
+- FASTA 파일 로딩
+
+**8. `run.py`**<br>
+**Final analysis execution**
+- `GCAnalysis` class를 이용한 전체 분석 흐름 관리
+- 전체 및 region별 Top / Bottom 100 gene 추출
+- GO enrichment 실행
+- 원하는 분석 결과 선택 및 출력
+- Visualization 실행
+
+**Class**<br>
+`GCAnalysis` class를 사용하여 GTF, FASTA, GC Content 결과 등
+분석에 필요한 데이터를 하나의 객체로 관리한다.
+
+한 번 계산한 Total/Region GC Content를 저장하고 이후
+Top/Bottom gene selection, GO enrichment, visualization에서
+재사용하여 중복 계산을 줄였다.
