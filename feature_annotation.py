@@ -101,54 +101,6 @@ def get_utr_regions(gene_df):
     #5'UTR, 3'UTR 좌표 병합하고 결과 반환     
     return union_intervals(utr5), union_intervals(utr3)
 
-# 5. gene과 gene 사이 intergenic 구간 계산
-def calculate_intergenic(genes):
-
-    results = []
-
-    #drop=True: 기존 index를 새 column으로 남기지 않고 버림
-    genes = genes.sort_values("start").reset_index(drop=True)
-
-    for i in range(len(genes)):
-
-        current_gene=genes.iloc[i]
-
-        left_region=None
-        right_region=None
-
-        #이전 gene이 있을 때
-        if i>0:
-            previous_gene=genes.iloc[i-1]
-
-            left_start=previous_gene["end"]+1
-            left_end=current_gene["start"]-1
-
-            left_region=[left_start, left_end]
-
-        #담 gene이 있을 때
-        if i< len(genes)-1: 
-            next_gene=genes.iloc[i+1]
-
-            right_start=current_gene["end"]+1
-            right_end=next_gene["start"]-1
-
-            right_region=[right_start,right_end]
-
-        #strand에 따라 upstream/downstream 결정
-        if current_gene["strand"]=="+":
-            upstream=left_region
-            downstream=right_region
-        else:
-            upstream=right_region
-            downstream=left_region
-
-        results.append([
-            current_gene["gene_id"], upstream, downstream])
-
-    return results
-
-
-
 # 5. 인접한 gene 사이 intergenic 영역 계산
 # strand에 따라 upstream / downstream 구분
 def calculate_intergenic(genes):
