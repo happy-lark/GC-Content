@@ -120,7 +120,7 @@ def calculate_intergenic(genes):
             previous_gene=genes.iloc[i-1]
 
             left_start=previous_gene["end"]+1
-            left_end=previous_gene["start"]-1
+            left_end=current_gene["start"]-1
 
             left_region=[left_start, left_end]
 
@@ -129,7 +129,7 @@ def calculate_intergenic(genes):
             next_gene=genes.iloc[i+1]
 
             right_start=current_gene["end"]+1
-            right_end=previous_gene["start"]-1
+            right_end=next_gene["start"]-1
 
             right_region=[right_start,right_end]
 
@@ -144,4 +144,4 @@ def calculate_intergenic(genes):
         results.append([
             current_gene["gene_id"], upstream, downstream])
 
-        return results
+    return results
