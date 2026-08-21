@@ -39,7 +39,7 @@ class GCAnalysis:
         print("Calculating Gene level GC Content")
         self.gene_gc = calculate_gene_gc(self.gtf,self.genome)
         print("Calculating Feature level GC Content")
-        self.feature_gc = calculate_region_gc(self.gtf,self.genomed)
+        self.feature_gc = calculate_region_gc(self.gtf,self.genome)
         print("GC Content calculation completed")
 
     def select_feature(self):
