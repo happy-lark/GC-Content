@@ -35,7 +35,7 @@ def read_gtf(gtf_path):
 #gene_id, gene_type, gene_name, transcript_id 추출
 #gene_id "([^"]+)": 
 def extract_attribute(gtf):
-    gtf = gtf.copy()
+    gtf = gtf.copy() #원본 df는 건드리지 않기 위해서 copy 사용
 
     gtf["gene_id"] = gtf["attributes"].str.extract(r'gene_id "([^"]+)"')
     gtf["gene_type"] = gtf["attributes"].str.extract(r'gene_type "([^"]+)"')
@@ -48,7 +48,7 @@ def extract_attribute(gtf):
 def filter_protein_coding(gtf):
     return gtf[
         gtf["gene_type"] == "protein_coding"
-    ].reset_index(drop=True) #index 0붙 다시 정리
+    ].reset_index(drop=True) #index 0부터 다시 정리
 
 #GTF 전체 전처리 
 def load_annotation(gtf_path):
@@ -56,3 +56,4 @@ def load_annotation(gtf_path):
     gtf = extract_attribute(gtf)
     gtf = filter_protein_coding(gtf)
     return gtf
+

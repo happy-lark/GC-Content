@@ -4,7 +4,7 @@
 def get_regions(gene_df):
 
     gene_regions = (
-        gene_df[gene_df["feature"] == "gene"]
+        gene_df[gene_df["feature"] == "gene"] 
         [["start", "end"]].values.tolist()
     )
 
@@ -23,22 +23,23 @@ def get_regions(gene_df):
 # 2. 겹쳐지거나 이어진 구간 CDS, exon 병합
 def union_intervals(regions):
 
-    #좌표가 하나도 없을때 
-    if len(regions) == 0:
+    #입력 좌표가 없으면 빈 리스트 반환 
+    if not regions:
         return []
 
-    #좌표를 start 기준으로 정렬 (작은 순서대로)
     regions = sorted(regions) 
 
-    merged = [regions[0]]
+    merged = [regions[0]] #첫번째 구간을 병합 기준으로 설정 
 
-    for start, end in regions[1:]:
-        last_start, last_end = merged[-1]
-        if start <= last_end + 1:
-            merged[-1][1] = max(last_end, end)
+    #두번째 구간부터 하나씩 이전 구간과 비교 
+    for current in regions[1:]:
+        current_start, current_end = current 
+        previous = merged [-1] 
+
+        if current_start <= previous[1] + 1:
+            previous[1]=max(previous[1],current_end)
         else:
-            merged.append([start, end])
-
+            merged.append(current)
     return merged
 
 #3. exon union 사이를 intron으로 계산

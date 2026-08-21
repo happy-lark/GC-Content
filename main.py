@@ -1,9 +1,9 @@
-#GTF, FASTA Data Looading
+#GTF, FASTA Data Looading용 
 
 from annotation import load_annotation
 from fasta import read_fasta
 
-# file path
+# file path 
 gtf_path = r"data\annotation\gencode.v50.annotation.gtf"
 fasta_path = r"data\genome\GRCh38.p14.genome.fa"
 
@@ -11,3 +11,5 @@ fasta_path = r"data\genome\GRCh38.p14.genome.fa"
 gtf = load_annotation(gtf_path)
 genome = read_fasta(fasta_path)
 print("\nData loading completed!")
+
+
